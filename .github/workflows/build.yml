@@ -1,0 +1,69 @@
+name: Kernel development builds
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, "arena/**"]
+    paths:
+      - "config/**"
+      - "scripts/**"
+      - "tests/**"
+      - "kernel.lock.json"
+      - "build.sh"
+      - ".github/workflows/build.yml"
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kernel-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  workspace-tests:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Test orchestration and configuration policy
+        run: python3 -m unittest discover -s tests -v
+      - name: Check shell entry point
+        run: bash -n build.sh
+
+  development-image:
+    needs: workspace-tests
+    runs-on: ubuntu-22.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [baseline, kernelsu]
+    name: ${{ matrix.profile }} (not flashable)
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Install host prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential flex bison bc m4 cpio xz-utils libelf-dev perl python3 tar file
+      - name: Fetch pinned sources and toolchains
+        run: ./build.sh fetch
+      - name: Build development Image
+        run: ./build.sh build --profile "${{ matrix.profile }}" --jobs 4
+      - name: Verify published checksums
+        run: cd "artifacts/${{ matrix.profile }}" && sha256sum -c SHA256SUMS
+      - name: Upload logs even on failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: dinodev-${{ matrix.profile }}-logs
+          path: .dinodev/logs/
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Upload development artifacts — NOT boot images
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: dinodev-${{ matrix.profile }}-development-image
+          path: artifacts/${{ matrix.profile }}/
+          if-no-files-found: error
+          retention-days: 14

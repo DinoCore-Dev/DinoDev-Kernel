@@ -1,0 +1,20 @@
+# Downloaded sources, toolchains, temporary trees, and build products.
+.dinodev/
+out/
+artifacts/
+*.log
+
+# Python test/runtime files.
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+
+# Local configuration; never commit signing keys or device images.
+*.pem
+*.key
+*.p12
+*.jks
+boot*.img
+vendor_boot*.img
+init_boot*.img

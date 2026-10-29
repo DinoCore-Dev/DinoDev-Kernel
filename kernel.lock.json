@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "kernel": {
+    "repository": "https://github.com/MillenniumOSS/android_kernel_common_android12-5.10.git",
+    "ref": "millennium-base",
+    "commit": "ef675606cb913c7015c6cb62e249258eaf862e15",
+    "directory": "kernel",
+    "version": "5.10.264"
+  },
+  "toolchain": {
+    "repository": "https://github.com/LineageOS/android_prebuilts_clang_kernel_linux-x86_clang-r416183b.git",
+    "ref": "lineage-20.0",
+    "commit": "54220fd601050b350b2af7adc913089ebf0e7aed",
+    "directory": "clang",
+    "version": "Android Clang 12.0.5 (r416183b)"
+  },
+  "build_tools": {
+    "repository": "https://github.com/LineageOS/android_prebuilts_build-tools.git",
+    "ref": "lineage-20.0",
+    "commit": "a82c39b06eff0dc470221953f455a4e756dfe469",
+    "directory": "build-tools",
+    "sparse_paths": ["linux-x86", "common/flex", "common/bison"]
+  },
+  "kernelsu": {
+    "repository": "https://github.com/tiann/KernelSU.git",
+    "ref": "v3.3.1",
+    "commit": "0c0fdb960178fa12d80d6cbcfdcb6ad8be6a865d",
+    "directory": "kernelsu",
+    "git_commit_count": 2680,
+    "manager_version": 32680
+  },
+  "host_crypto": {
+    "repository": "https://github.com/openssl/openssl.git",
+    "ref": "openssl-3.5.6",
+    "commit": "286ddeaac037533bbdce65b3c689e3f7ffebf0f6",
+    "directory": "openssl"
+  }
+}
